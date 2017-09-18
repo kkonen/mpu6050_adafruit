@@ -14,7 +14,7 @@ for i in range(num_dev):
    # ax[i].set_ylabel('Acc')
 
     dev = data[np.where(data[:]['device'] == i)]
-    time = dev['micros']
+    time = dev['micros']/1000000
 
     ax[i].plot(time, dev['ax'], c='r', label='ax')
     ax[i].plot(time, dev['ay'], c='g', label='ay')
