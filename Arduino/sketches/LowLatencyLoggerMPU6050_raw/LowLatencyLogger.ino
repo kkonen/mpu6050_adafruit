@@ -571,9 +571,9 @@ void setup(void) {
   Serial.begin(9600);
   
   // Wait for USB Serial 
-  while (!Serial) {
-    SysCall::yield();
-  }
+//  while (!Serial) {
+//    SysCall::yield();
+//  }
   Serial.print(F("\nFreeStack: "));
   Serial.println(FreeStack());
   Serial.print(F("Records/block: "));
@@ -596,66 +596,67 @@ void setup(void) {
   }
   // recover existing tmp file.
   if (sd.exists(TMP_FILE_NAME)) {
-    Serial.println(F("\nType 'Y' to recover existing tmp file " TMP_FILE_NAME));
-    while (!Serial.available()) {
-      SysCall::yield();
-    }
-    if (Serial.read() == 'Y') {
+//    Serial.println(F("\nType 'Y' to recover existing tmp file " TMP_FILE_NAME));
+//    while (!Serial.available()) {
+//      SysCall::yield();
+//    }
+//    if (Serial.read() == 'Y') {
       recoverTmpFile();
-    } else {
-      error("'Y' not typed, please manually delete " TMP_FILE_NAME);
-    }
+//    } else {
+//      error("'Y' not typed, please manually delete " TMP_FILE_NAME);
+//    }
   }
 }
 //------------------------------------------------------------------------------
 void loop(void) {
   // Read any Serial data.
-  do {
-    delay(10);
-  } while (Serial.available() && Serial.read() >= 0);
-  Serial.println();
-  Serial.println(F("type:"));
-  Serial.println(F("b - open existing bin file"));  
-  Serial.println(F("c - convert file to csv"));
-  Serial.println(F("d - dump data to Serial"));
-  Serial.println(F("e - overrun error details"));
-  Serial.println(F("l - list files"));  
-  Serial.println(F("r - record data"));
-  Serial.println(F("t - test without logging"));
-  while(!Serial.available()) {
-    SysCall::yield();
-  }
+//  do {
+//    delay(10);
+//  } while (Serial.available() && Serial.read() >= 0);
+//  Serial.println();
+//  Serial.println(F("type:"));
+//  Serial.println(F("b - open existing bin file"));  
+//  Serial.println(F("c - convert file to csv"));
+//  Serial.println(F("d - dump data to Serial"));
+//  Serial.println(F("e - overrun error details"));
+//  Serial.println(F("l - list files"));  
+//  Serial.println(F("r - record data"));
+//  Serial.println(F("t - test without logging"));
+//  while(!Serial.available()) {
+//    SysCall::yield();
+//  }
 #if WDT_YIELD_TIME_MICROS
   Serial.println(F("LowLatencyLogger can not run with watchdog timer"));
   SysCall::halt();
 #endif
-  
-  char c = tolower(Serial.read());
+
+  logData();
+//  char c = tolower(Serial.read());
 
   // Discard extra Serial data.
-  do {
-    delay(10);
-  } while (Serial.available() && Serial.read() >= 0);
-
-  if (ERROR_LED_PIN >= 0) {
-    digitalWrite(ERROR_LED_PIN, LOW);
-  }
-  if (c == 'b') {
-    openBinFile();
-  } else if (c == 'c') {
-    binaryToCsv();
-  } else if (c == 'd') {
-    dumpData();
-  } else if (c == 'e') {
-    checkOverrun();
-  } else if (c == 'l') {
-    Serial.println(F("\nls:"));  
-    sd.ls(&Serial, LS_SIZE);  
-  } else if (c == 'r') {
-    logData();
-  } else if (c == 't') {
-    testSensor();    
-  } else {
-    Serial.println(F("Invalid entry"));
-  }
+//  do {
+//    delay(10);
+//  } while (Serial.available() && Serial.read() >= 0);
+//
+//  if (ERROR_LED_PIN >= 0) {
+//    digitalWrite(ERROR_LED_PIN, LOW);
+//  }
+//  if (c == 'b') {
+//    openBinFile();
+//  } else if (c == 'c') {
+//    binaryToCsv();
+//  } else if (c == 'd') {
+//    dumpData();
+//  } else if (c == 'e') {
+//    checkOverrun();
+//  } else if (c == 'l') {
+//    Serial.println(F("\nls:"));  
+//    sd.ls(&Serial, LS_SIZE);  
+//  } else if (c == 'r') {
+//    logData();
+//  } else if (c == 't') {
+//    testSensor();    
+//  } else {
+//    Serial.println(F("Invalid entry"));
+//  }
 }

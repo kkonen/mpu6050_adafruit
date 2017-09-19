@@ -1,7 +1,7 @@
 #ifndef UserTypes_h
 #define UserTypes_h
 #include "Arduino.h"
-#define FILE_BASE_NAME "mpuraw"
+#define FILE_BASE_NAME "realdata"
 
 const int devices = 4;
 

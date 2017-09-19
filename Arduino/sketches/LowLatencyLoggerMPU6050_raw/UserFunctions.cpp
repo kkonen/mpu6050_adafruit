@@ -41,8 +41,8 @@ void userSetup() {
   }
   
   // initialize serial communication
-  Serial.begin(115200);
-  while (!Serial); // wait for Leonardo enumeration, others continue immediately
+//  Serial.begin(115200);
+//  while (!Serial); // wait for Leonardo enumeration, others continue immediately
   
   Serial.println(F("Initializing I2C devices..."));
   for(int i=0; i<devices; i++){
