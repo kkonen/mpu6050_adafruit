@@ -3,7 +3,7 @@
 #include "Arduino.h"
 #define FILE_BASE_NAME "realdata"
 
-const int devices = 4;
+const int devices = 1;
 
 struct data_t {
   unsigned long time[devices];

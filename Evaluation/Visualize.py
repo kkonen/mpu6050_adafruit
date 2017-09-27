@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-num_dev = 3
+num_dev = 4
 
-data = np.genfromtxt('data/test0.csv', delimiter=',', skip_header=0, names=True)
+data = np.genfromtxt('data/flat.csv', delimiter=',', skip_header=0, names=True)
 
 fig, ax = plt.subplots(num_dev, sharex=True)
 
@@ -15,6 +15,8 @@ for i in range(num_dev):
 
     dev = data[np.where(data[:]['device'] == i)]
     time = dev['micros']/1000000
+
+
 
     ax[i].plot(time, dev['ax'], c='r', label='ax')
     ax[i].plot(time, dev['ay'], c='g', label='ay')

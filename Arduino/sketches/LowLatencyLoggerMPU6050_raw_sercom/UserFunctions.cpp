@@ -48,12 +48,48 @@ void userSetup() {
   for(int i=0; i<devices; i++){
     selectDevice(i);
     // initialize device
-    mpu.initialize();
+    mpu.initialize();    
     
     // verify connection
     Serial.print("Testing MPU"); Serial.print(i); Serial.print(" connection... ");
     bool connection = mpu.testConnection();
     Serial.println(connection ? F("connection successful!") : F("connection FAILED!"));
+
+   // if(i == 0) {
+      mpu.setXAccelOffset(-76);
+      mpu.setYAccelOffset(+2359);
+      mpu.setZAccelOffset(1688);
+      mpu.setXGyroOffset(0);
+      mpu.setYGyroOffset(0);
+      mpu.setZGyroOffset(0);
+   // }
+//    
+//    if(i == 1) {
+//      mpu.setXAccelOffset(1750);
+//      mpu.setYAccelOffset(-650);
+//      mpu.setZAccelOffset(-16675);
+//      mpu.setXGyroOffset(120);
+//      mpu.setYGyroOffset(-20);
+//      mpu.setZGyroOffset(-50);
+//    }
+//    
+//    if(i == 2) {
+//      mpu.setXAccelOffset(2300);
+//      mpu.setYAccelOffset(-2450);
+//      mpu.setZAccelOffset(-14800);
+//      mpu.setXGyroOffset(-475);
+//      mpu.setYGyroOffset(-125);
+//      mpu.setZGyroOffset(0);
+//    }
+//    
+//    if(i == 3) {
+//      mpu.setXAccelOffset(2350);
+//      mpu.setYAccelOffset(-2460);
+//      mpu.setZAccelOffset(-14750);
+//      mpu.setXGyroOffset(-475);
+//      mpu.setYGyroOffset(-100);
+//      mpu.setZGyroOffset(0);
+//    }
   }
 }
 
