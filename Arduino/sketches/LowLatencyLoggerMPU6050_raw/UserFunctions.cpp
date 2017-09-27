@@ -6,6 +6,12 @@
 //------------------------------------------------------------------------------
 MPU6050 mpu;
 int addPins[4] = {A0,A1,A2,A3};
+
+int offsets[4][6] = {{-2790,2557,4877,184,65,16},
+                     {-1142,-2002,5025,-34,7,9},
+                     {-2672,-1114,5193,119,-30,-4},
+                     {-2672,-1114,5193,119,-30,-4}};
+
 static unsigned long startMicros;
 // Acquire a data record.
 
@@ -54,6 +60,16 @@ void userSetup() {
     Serial.print("Testing MPU"); Serial.print(i); Serial.print(" connection... ");
     bool connection = mpu.testConnection();
     Serial.println(connection ? F("connection successful!") : F("connection FAILED!"));
+
+
+    mpu.setXAccelOffset(offsets[i][0]);
+    mpu.setYAccelOffset(offsets[i][1]);
+    mpu.setZAccelOffset(offsets[i][2]);
+    mpu.setXGyroOffset(offsets[i][3]);
+    mpu.setYGyroOffset(offsets[i][4]);
+    mpu.setZGyroOffset(offsets[i][5]);
+
+    
   }
 }
 

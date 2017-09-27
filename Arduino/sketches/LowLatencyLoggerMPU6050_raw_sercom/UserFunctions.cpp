@@ -6,6 +6,10 @@
 //------------------------------------------------------------------------------
 MPU6050 mpu;
 int addPins[4] = {A0,A1,A2,A3};
+int offsets[4][6] = {{-2790,2557,4877,184,65,16},
+                     {-1142,-2002,5025,-34,7,9},
+                     {-2672,-1114,5193,119,-30,-4},
+                     {-2672,-1114,5193,119,-30,-4}};
 static unsigned long startMicros;
 // Acquire a data record.
 
@@ -55,41 +59,12 @@ void userSetup() {
     bool connection = mpu.testConnection();
     Serial.println(connection ? F("connection successful!") : F("connection FAILED!"));
 
-   // if(i == 0) {
-      mpu.setXAccelOffset(-76);
-      mpu.setYAccelOffset(+2359);
-      mpu.setZAccelOffset(1688);
-      mpu.setXGyroOffset(0);
-      mpu.setYGyroOffset(0);
-      mpu.setZGyroOffset(0);
-   // }
-//    
-//    if(i == 1) {
-//      mpu.setXAccelOffset(1750);
-//      mpu.setYAccelOffset(-650);
-//      mpu.setZAccelOffset(-16675);
-//      mpu.setXGyroOffset(120);
-//      mpu.setYGyroOffset(-20);
-//      mpu.setZGyroOffset(-50);
-//    }
-//    
-//    if(i == 2) {
-//      mpu.setXAccelOffset(2300);
-//      mpu.setYAccelOffset(-2450);
-//      mpu.setZAccelOffset(-14800);
-//      mpu.setXGyroOffset(-475);
-//      mpu.setYGyroOffset(-125);
-//      mpu.setZGyroOffset(0);
-//    }
-//    
-//    if(i == 3) {
-//      mpu.setXAccelOffset(2350);
-//      mpu.setYAccelOffset(-2460);
-//      mpu.setZAccelOffset(-14750);
-//      mpu.setXGyroOffset(-475);
-//      mpu.setYGyroOffset(-100);
-//      mpu.setZGyroOffset(0);
-//    }
+    mpu.setXAccelOffset(offsets[i][0]);
+    mpu.setYAccelOffset(offsets[i][1]);
+    mpu.setZAccelOffset(offsets[i][2]);
+    mpu.setXGyroOffset(offsets[i][3]);
+    mpu.setYGyroOffset(offsets[i][4]);
+    mpu.setZGyroOffset(offsets[i][5]);
   }
 }
 
