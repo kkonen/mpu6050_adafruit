@@ -7,7 +7,7 @@
 MPU6050 mpu;
 int addPins[4] = {A0,A1,A2,A3};
 
-int offsets[4][6] = {{-2790,2557,4877,184,65,16},
+int offsets[4][6] = {{-2737,2478,4808,170,41,9},
                      {-1142,-2002,5025,-34,7,9},
                      {-2672,-1114,5193,119,-30,-4},
                      {-2672,-1114,5193,119,-30,-4}};
@@ -61,8 +61,8 @@ void userSetup() {
     bool connection = mpu.testConnection();
     Serial.println(connection ? F("connection successful!") : F("connection FAILED!"));
 
-    mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_1000);
-    mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_8);
+    mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+    mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
     mpu.setXAccelOffset(offsets[i][0]);
     mpu.setYAccelOffset(offsets[i][1]);
     mpu.setZAccelOffset(offsets[i][2]);

@@ -29,8 +29,8 @@
 ///////////////////////////////////   CONFIGURATION   /////////////////////////////
 //Change this 3 variables if you want to fine tune the skecth to your needs.
 int buffersize=1000;     //Amount of readings used to average, make it higher to get more precision but sketch will be slower  (default:1000)
-int acel_deadzone=100;     //Acelerometer error allowed, make it lower to get more precision, but sketch may not converge  (default:8)
-int giro_deadzone=10;     //Giro error allowed, make it lower to get more precision, but sketch may not converge  (default:1)
+int acel_deadzone=50;     //Acelerometer error allowed, make it lower to get more precision, but sketch may not converge  (default:8)
+int giro_deadzone=5;     //Giro error allowed, make it lower to get more precision, but sketch may not converge  (default:1)
 
 // default I2C address is 0x68
 // specific I2C addresses may be passed as a parameter here
@@ -65,10 +65,13 @@ void setup() {
     digitalWrite(addPins[i], HIGH);
   }
 
-  digitalWrite(addPins[3],LOW);
+  digitalWrite(addPins[0],LOW);
   
   // initialize device
   accelgyro.initialize();
+  
+  accelgyro.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+  accelgyro.setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
 
   // wait for ready
   while (Serial.available() && Serial.read()); // empty buffer
@@ -144,7 +147,7 @@ void loop() {
     Serial.print(",");
     Serial.println(gz_offset); 
     Serial.println("\nData is printed as: acelX acelY acelZ giroX giroY giroZ");
-    Serial.println("Check that your sensor readings are close to 0 0 16384 0 0 0");
+    Serial.println("Check that your sensor readings are close to 0 0 (16384/4) 0 0 0");
     Serial.println("If calibration was succesful write down your offsets so you can set them in your projects using something similar to mpu.setXAccelOffset(youroffset)");
     accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
 
@@ -189,7 +192,7 @@ void meansensors(){
 void calibration(){
   ax_offset=-mean_ax/8;
   ay_offset=-mean_ay/8;
-  az_offset=(16384-mean_az)/8;
+  az_offset=((16384/8)-mean_az)/8;
 
   gx_offset=-mean_gx/4;
   gy_offset=-mean_gy/4;
@@ -214,8 +217,8 @@ void calibration(){
     if (abs(mean_ay)<=acel_deadzone) ready++;
     else ay_offset=ay_offset-mean_ay/acel_deadzone;
 
-    if (abs(16384-mean_az)<=acel_deadzone) ready++;
-    else az_offset=az_offset+(16384-mean_az)/acel_deadzone;
+    if (abs((16384/8)-mean_az)<=acel_deadzone) ready++;
+    else az_offset=az_offset+((16384/8)-mean_az)/acel_deadzone;
 
     if (abs(mean_gx)<=giro_deadzone) ready++;
     else gx_offset=gx_offset-mean_gx/(giro_deadzone+1);
