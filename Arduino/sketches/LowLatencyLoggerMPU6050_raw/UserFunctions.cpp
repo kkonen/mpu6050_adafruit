@@ -61,7 +61,8 @@ void userSetup() {
     bool connection = mpu.testConnection();
     Serial.println(connection ? F("connection successful!") : F("connection FAILED!"));
 
-
+    mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_1000);
+    mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_8);
     mpu.setXAccelOffset(offsets[i][0]);
     mpu.setYAccelOffset(offsets[i][1]);
     mpu.setZAccelOffset(offsets[i][2]);
