@@ -7,11 +7,32 @@
 MPU6050 mpu;
 int addPins[4] = {A0,A1,A2,A3};
 
+
+
+int gyro_sen[4] = {MPU6050_GYRO_FS_2000,
+                   MPU6050_GYRO_FS_1000,
+                   MPU6050_GYRO_FS_500,
+                   MPU6050_GYRO_FS_250};
+int acc_sen[4] = {MPU6050_ACCEL_FS_16,
+                   MPU6050_ACCEL_FS_8,
+                   MPU6050_ACCEL_FS_4,
+                   MPU6050_ACCEL_FS_2};
+
+
+
+// DESCENDING SENSITIVTY (16G->2G)
+int offsets[4][6] = {{-2715,2524,4811,200,45,10},
+                     {-1123,-1973,4996,-28,0,8},
+                     {-2659,-1085,5166,117,-28,-3},
+                     {-2672,-1114,5193,119,-30,-4}};
+
+
+/*
 int offsets[4][6] = {{-2737,2478,4808,170,41,9},
                      {-1142,-2002,5025,-34,7,9},
                      {-2672,-1114,5193,119,-30,-4},
                      {-2672,-1114,5193,119,-30,-4}};
-
+*/
 static unsigned long startMicros;
 // Acquire a data record.
 
@@ -61,8 +82,8 @@ void userSetup() {
     bool connection = mpu.testConnection();
     Serial.println(connection ? F("connection successful!") : F("connection FAILED!"));
 
-    mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
-    mpu.setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
+    mpu.setFullScaleGyroRange(gyro_sen[i]);
+    mpu.setFullScaleAccelRange(acc_sen[i]);
     mpu.setXAccelOffset(offsets[i][0]);
     mpu.setYAccelOffset(offsets[i][1]);
     mpu.setZAccelOffset(offsets[i][2]);
