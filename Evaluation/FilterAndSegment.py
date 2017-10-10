@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import butter, lfilter, freqz
+from scipy.signal import butter, lfilter
+import copy
 
 num_dev = 3
 
-input_data = np.genfromtxt('data/multi_sen_test/12.csv', delimiter=',', skip_header=0, names=True)
+input_data = np.genfromtxt('data/multi_sen_test/11.csv', delimiter=',', skip_header=0, names=True)
 
 
 def butter_lowpass(cutoff, fs, order=5):
@@ -28,54 +29,100 @@ def filterData(data, cutoff, time, order=6):
     t = np.linspace(0, T, n, endpoint=False)
     out = butter_lowpass_filter(data, cutoff, fs, order)
 
-    return out, t
+    return out
 
 
-def filterAndPlotSingleDev(dev_idx):
-    fig, ax = plt.subplots(4, sharex=True)
-
-    dev = input_data[np.where(input_data[:]['device'] == dev_idx)]
-    time = dev['micros']
-
-    # Filter the data, and plot both the original and filtered signals.
-    a_x, t = filterData(dev['ax'], 15, time)
-    a_y, t = filterData(dev['ay'], 15, time)
-    a_z, t = filterData(dev['az'], 15, time)
-
-    ax[0].plot(t, a_x, c='r', label='ax')
-    ax[1].plot(t, a_y, c='g', label='ay')
-    ax[2].plot(t, a_z, c='b', label='az')
-    ax[3].plot(time/1000000, dev['gx'], c='m', label='gx')
-    ax[3].plot(time/1000000, dev['gy'], c='c', label='gy')
-    ax[3].plot(time/1000000, dev['gz'], c='k', label='gz')
-    plt.show()
+def devData(input, idx):
+    return input[np.where(input[:]['device'] == idx)]
 
 
-def filterAndPlotAllDevs():
+def filterDevice(input):
+   # if input.dtype == np.dtype('float64'):
+    time = input['micros']
+    output = copy.deepcopy(input)
+    freq = 10
+    output['ax'] = filterData(input['ax'], freq, time)
+    output['ay'] = filterData(input['ay'], freq, time)
+    output['az'] = filterData(input['az'], freq, time)
+    output['gx'] = filterData(input['gx'], freq, time)
+    output['gy'] = filterData(input['gy'], freq, time)
+    output['gz'] = filterData(input['gz'], freq, time)
+    return output
 
-    fig, ax = plt.subplots(num_dev, sharex=True)
 
-    for i in range(num_dev):
+def findPeaks(signal, ts, thresh, min_dist):
+    peaks = []
+    lastPeakMicros = 0
+    for i in range(0,len(signal)):
+        if (signal[i] > thresh) and ts[i] - lastPeakMicros > min_dist:
+            lastPeakMicros = ts[i]
+            peaks.append(i)
 
-        # ax[i].set_title(str(i))
-        # ax[i].set_xlabel('Time')
-        # ax[i].set_ylabel('Acc')
-        dev = input_data[np.where(input_data[:]['device'] == i)]
-        time = dev['micros']
+    return np.array(peaks)
 
-        a_x, t = filterData(dev['ax'], 15, time)
-        a_y, t = filterData(dev['ay'], 15, time)
-        a_z, t = filterData(dev['az'], 15, time)
 
-        ax[i].plot(t, a_x, c='r', label='ax')
-        ax[i].plot(t, a_y, c='g', label='ay')
-        ax[i].plot(t, a_z, c='b', label='az')
-        ax[i].plot(time/1000000, dev['gx'], c='m', label='gx')
-        ax[i].plot(time/1000000, dev['gy'], c='c', label='gy')
-        ax[i].plot(time/1000000, dev['gz'], c='k', label='gz')
+def segmentData(input, threshold, channel):
+    peaks = findPeaks(input[:][channel], input[:]['micros'], threshold, 1000000)
+    segments = []
+    for i in peaks:
+        segments.append(input[i-50:i+250])
 
-        leg = ax[i].legend()
+    return np.array(segments)
 
-    plt.show()
 
-filterAndPlotAllDevs()
+def meanSegment(segments):
+    mean_seg = copy.deepcopy(segments[0])
+    mean_seg['ax'] = segments['ax'].mean(axis=0)
+    mean_seg['ay'] = segments['ay'].mean(axis=0)
+    mean_seg['az'] = segments['az'].mean(axis=0)
+    mean_seg['gx'] = segments['gx'].mean(axis=0)
+    mean_seg['gy'] = segments['gy'].mean(axis=0)
+    mean_seg['gz'] = segments['gz'].mean(axis=0)
+
+    return mean_seg
+
+
+def plotSegment(input, input2=None, title=None):
+    if input2 is None:
+        fig, ax = plt.subplots(1)
+        t = input['micros']/1000000
+        ax.plot(t, input['ax'], c='r', label='ax')
+        ax.plot(t, input['ay'], c='g', label='ay')
+        ax.plot(t, input['az'], c='b', label='az')
+        ax.plot(t, input['gx'], c='m', label='gx')
+        ax.plot(t, input['gy'], c='c', label='gy')
+        ax.plot(t, input['gz'], c='k', label='gz')
+    else:
+        fig, ax = plt.subplots(2, sharex=True)
+        t = input['micros']/1000000
+        ax[0].plot(t, input['ax'], c='r', label='ax')
+        ax[0].plot(t, input['ay'], c='g', label='ay')
+        ax[0].plot(t, input['az'], c='b', label='az')
+        ax[0].plot(t, input['gx'], c='m', label='gx')
+        ax[0].plot(t, input['gy'], c='c', label='gy')
+        ax[0].plot(t, input['gz'], c='k', label='gz')
+
+        ax[1].plot(t, input2['ax'], c='r', label='ax')
+        ax[1].plot(t, input2['ay'], c='g', label='ay')
+        ax[1].plot(t, input2['az'], c='b', label='az')
+        ax[1].plot(t, input2['gx'], c='m', label='gx')
+        ax[1].plot(t, input2['gy'], c='c', label='gy')
+        ax[1].plot(t, input2['gz'], c='k', label='gz')
+    if title is not None:
+        fig.canvas.set_window_title(title)
+
+
+unfiltered = devData(input_data, 0)
+filtered = filterDevice(unfiltered)
+segmented = segmentData(filtered, 10000, 'gy')
+
+plotSegment(filtered, unfiltered, title='Dataset')
+
+i = 0
+for segment in segmented:
+    i = i+1
+    plotSegment(segment, title='Trick '+str(i))
+
+plotSegment(meanSegment(segmented), title='Mean Trick')
+
+plt.show()
