@@ -49,7 +49,7 @@ int ax_offset,ay_offset,az_offset,gx_offset,gy_offset,gz_offset;
 
 const int DEVICE = 2;
 
-int devider[4] = {8,4,2,1};
+int devider[4] = {8,8,8,8};
 
 int gyro_sen[4] = {MPU6050_GYRO_FS_2000,
                    MPU6050_GYRO_FS_1000,
@@ -82,7 +82,7 @@ void setup() {
   accelgyro.initialize();
   
   accelgyro.setFullScaleGyroRange(gyro_sen[DEVICE]);
-  accelgyro.setFullScaleAccelRange(acc_sen[DEVICE]);
+  accelgyro.setFullScaleAccelRange(acc_sen[0]);
 
   // wait for ready
   while (Serial.available() && Serial.read()); // empty buffer
