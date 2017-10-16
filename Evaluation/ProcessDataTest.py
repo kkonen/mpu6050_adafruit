@@ -2,6 +2,7 @@ from FilterAndSegment import *
 from scipy.spatial.distance import euclidean
 from fastdtw import fastdtw
 
+
 def plot_test():
     input_data = np.genfromtxt('data/multi_sen_test/11.csv', delimiter=',', skip_header=0, names=True)
 
@@ -21,6 +22,14 @@ def plot_test():
     plt.show()
 
 
+def save_load_test():
+    input_data = np.genfromtxt('data/multi_sen_test/11.csv', delimiter=',', skip_header=0, names=True)
+    filtered = filter_device(dev_data(input_data, 0))
+    segmented = segment_data(filtered, 10000, 'gy')
+
+    np.save('ollies_0', segmented)
+
+
 def dtw_test():
 
     input_data = np.genfromtxt('data/multi_sen_test/11.csv', delimiter=',', skip_header=0, names=True)
@@ -28,59 +37,56 @@ def dtw_test():
     segmented = segment_data(filtered, 10000, 'gy')
     mean_seg = calc_mean_segment(segmented)
 
-    for segment in segmented:
-       # plot_segment(segment)
-        distance, path = fastdtw(segment['az'], mean_seg['az'], dist=euclidean)
+    test_channel = 'gz'
+    t = mean_seg['micros']/1000000
+
+    # compare each sample to the mean sample
+    for idx, segment in enumerate(segmented):
+        plot_segment(segment, title='Trick #'+str(idx), t=t)
+        distance, path = fastdtw(segment[test_channel], mean_seg[test_channel])
         print(distance/100000)
 
+    # compare with random data
     rnd = np.random.rand(300)*32000
-    distance, path = fastdtw(rnd, mean_seg['az'], dist=euclidean)
+    distance, path = fastdtw(rnd, mean_seg[test_channel], dist=euclidean)
     print("rnd dist:" + str(distance/100000))
-    rnd_d = copy.deepcopy(mean_seg)
-    rnd_d['az'] = rnd
-    plot_segment(rnd_d, title='rnd')
+    # plot_segment(rnd, title='rnd', include_labels=[test_channel], t=t)
 
+    # compare with zero data
     z = np.zeros(300)
-    distance, path = fastdtw(z, mean_seg['az'], dist=euclidean)
+    distance, path = fastdtw(z, mean_seg[test_channel], dist=euclidean)
     print("z dist:" + str(distance/100000))
-    z_d = copy.deepcopy(mean_seg)
-    z_d['az'] = z
-    plot_segment(z_d, title='zeros')
+    # plot_segment(z, title='zeros', include_labels=[test_channel], t=t)
 
-
-    amp_dec = mean_seg['az'] * 0.5
-    distance, path = fastdtw(amp_dec, mean_seg['az'], dist=euclidean)
+    # compare with same sample of decreased amplitude (signal*0.5)
+    amp_dec = mean_seg[test_channel] * 0.5
+    distance, path = fastdtw(amp_dec, mean_seg[test_channel], dist=euclidean)
     print("amp_dec dist:" + str(distance/100000))
-    amp_dec_d = copy.deepcopy(mean_seg)
-    amp_dec_d['az'] = amp_dec
-    plot_segment(amp_dec_d, title='amp_dec')
+    # plot_segment(amp_dec, title='amp_dec', include_labels=[test_channel], t=t)
 
+    # compare with same sample of increased amplitude (signal*1.5)
+    amp_inc = mean_seg[test_channel] * 1.5
+    distance, path = fastdtw(amp_inc, mean_seg[test_channel], dist=euclidean)
+    print("amp_inc dist:" + str(distance/100000))
+    # plot_segment(amp_inc, title='amp_inc', include_labels=[test_channel], t=t)
 
-    amp_inc = mean_seg['az'] * 1.5
-    distance, path = fastdtw(amp_inc, mean_seg['az'], dist=euclidean)
-    print("amp_inc dist:" +str(distance/100000))
-    amp_inc_d = copy.deepcopy(mean_seg)
-    amp_inc_d['az'] = amp_inc
-    plot_segment(amp_inc_d, title='amp_inc')
-
-    y_shift = mean_seg['az'] + 5000
-    distance, path = fastdtw(y_shift, mean_seg['az'], dist=euclidean)
+    # compare with same sample of y-shifted amplitude (signal+5000)
+    y_shift = mean_seg[test_channel] + 5000
+    distance, path = fastdtw(y_shift, mean_seg[test_channel], dist=euclidean)
     print("y shift dist:" + str(distance/100000))
-    y_shift_d = copy.deepcopy(mean_seg)
-    y_shift_d['az'] = y_shift
-    plot_segment(y_shift_d, title='yshift')
+    # plot_segment(y_shift, title='y-shift', include_labels=[test_channel], t=t)
 
-    x_shift = np.append(np.zeros(50), mean_seg['az'][0:250])
-    distance, path = fastdtw(x_shift, mean_seg['az'], dist=euclidean)
+    # compare with same sample of phase-shifted amplitude (signal shifted right by 50 samples)
+    x_shift = np.append(np.zeros(50), mean_seg[test_channel][0:250])
+    distance, path = fastdtw(x_shift, mean_seg[test_channel], dist=euclidean)
     print("x shift dist:" + str(distance/100000))
-    x_shift_d = copy.deepcopy(mean_seg)
-    x_shift_d['az'] = x_shift
-    plot_segment(x_shift_d, title='xshift')
+    # plot_segment(x_shift, title='x-shift', include_labels=[test_channel], t=t)
 
-    plot_segment(mean_seg, title='Mean Trick')
+    # plot mean sample
+    plot_segment(mean_seg, title='Mean Trick', include_labels=[test_channel])
 
     plt.show()
 
 
 dtw_test()
-
+#save_load_test()

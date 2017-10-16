@@ -78,32 +78,35 @@ def calc_mean_segment(segments):
     return mean_seg
 
 
-def plot_segment(input_data, input_data2=None, title=None):
-    if input_data2 is None:
-        fig, ax = plt.subplots(1)
-        t = input_data['micros']/1000000
-       # ax.plot(t, input_data['ax'], c='r', label='ax')
-      #  ax.plot(t, input_data['ay'], c='g', label='ay')
-        ax.plot(t, input_data['az'], c='b', label='az')
-       # ax.plot(t, input_data['gx'], c='m', label='gx')
-       # ax.plot(t, input_data['gy'], c='c', label='gy')
-      #  ax.plot(t, input_data['gz'], c='k', label='gz')
+def plot_segment(input_data, input_data2=None, title=None, include_labels=['ax', 'ay', 'az', 'gx', 'gy', 'gz'], t=None):
+    all_labels = ['ax', 'ay', 'az', 'gx', 'gy', 'gz']
+    lb_colors = ['r', 'g', 'b', 'm', 'c', 'k']
+
+    if input_data.dtype == np.dtype('float64'):
+        if t is None:
+            print("no time given!")
+            return
+        else:
+            fig, ax = plt.subplots(1)
+            ax.plot(t, input_data, c='r')
     else:
-        fig, ax = plt.subplots(2, sharex=True)
-        t = input_data['micros']/1000000
-        ax[0].plot(t, input_data['ax'], c='r', label='ax')
-        ax[0].plot(t, input_data['ay'], c='g', label='ay')
-        ax[0].plot(t, input_data['az'], c='b', label='az')
-        ax[0].plot(t, input_data['gx'], c='m', label='gx')
-        ax[0].plot(t, input_data['gy'], c='c', label='gy')
-        ax[0].plot(t, input_data['gz'], c='k', label='gz')
+        if t is None:
+            t = input_data['micros']/1000000
 
-        ax[1].plot(t, input_data2['ax'], c='r', label='ax')
-        ax[1].plot(t, input_data2['ay'], c='g', label='ay')
-        ax[1].plot(t, input_data2['az'], c='b', label='az')
-        ax[1].plot(t, input_data2['gx'], c='m', label='gx')
-        ax[1].plot(t, input_data2['gy'], c='c', label='gy')
-        ax[1].plot(t, input_data2['gz'], c='k', label='gz')
+        if input_data2 is None:
+            fig, ax = plt.subplots(1)
+            for i in range(0, len(all_labels)):
+                if all_labels[i] in include_labels:
+                    ax.plot(t, input_data[all_labels[i]], c=lb_colors[i], label=all_labels[i])
+        else:
+            fig, ax = plt.subplots(2, sharex=True)
+            for i in range(0, len(all_labels)):
+                if all_labels[i] in include_labels:
+                    ax[0].plot(t, input_data[all_labels[i]], c=lb_colors[i], label=all_labels[i])
+
+            for i in range(0, len(all_labels)):
+                if all_labels[i] in include_labels:
+                    ax[1].plot(t, input_data2[all_labels[i]], c=lb_colors[i], label=all_labels[i])
+
     if title is not None:
-        fig.canvas.set_window_title(title)
-
+            fig.canvas.set_window_title(title)
