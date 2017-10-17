@@ -52,13 +52,13 @@ const int DEVICE = 2;
 int devider[4] = {8,8,8,8};
 
 int gyro_sen[4] = {MPU6050_GYRO_FS_2000,
-                   MPU6050_GYRO_FS_1000,
-                   MPU6050_GYRO_FS_500,
-                   MPU6050_GYRO_FS_250};
+                   MPU6050_GYRO_FS_2000,
+                   MPU6050_GYRO_FS_2000,
+                   MPU6050_GYRO_FS_2000};
 int acc_sen[4] = {MPU6050_ACCEL_FS_16,
-                   MPU6050_ACCEL_FS_8,
-                   MPU6050_ACCEL_FS_4,
-                   MPU6050_ACCEL_FS_2};
+                   MPU6050_ACCEL_FS_16,
+                   MPU6050_ACCEL_FS_16,
+                   MPU6050_ACCEL_FS_16};
 
 ///////////////////////////////////   SETUP   ////////////////////////////////////
 void setup() {
@@ -82,7 +82,7 @@ void setup() {
   accelgyro.initialize();
   
   accelgyro.setFullScaleGyroRange(gyro_sen[DEVICE]);
-  accelgyro.setFullScaleAccelRange(acc_sen[0]);
+  accelgyro.setFullScaleAccelRange(acc_sen[DEVICE]);
 
   // wait for ready
   while (Serial.available() && Serial.read()); // empty buffer
