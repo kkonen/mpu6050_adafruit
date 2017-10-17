@@ -10,13 +10,13 @@ int addPins[4] = {A0,A1,A2,A3};
 
 
 int gyro_sen[4] = {MPU6050_GYRO_FS_2000,
-                   MPU6050_GYRO_FS_1000,
-                   MPU6050_GYRO_FS_500,
-                   MPU6050_GYRO_FS_250};
+                   MPU6050_GYRO_FS_2000,
+                   MPU6050_GYRO_FS_2000,
+                   MPU6050_GYRO_FS_2000};
 int acc_sen[4] = {MPU6050_ACCEL_FS_16,
-                   MPU6050_ACCEL_FS_8,
-                   MPU6050_ACCEL_FS_4,
-                   MPU6050_ACCEL_FS_2};
+                   MPU6050_ACCEL_FS_16,
+                   MPU6050_ACCEL_FS_16,
+                   MPU6050_ACCEL_FS_16};
 
 int offsets[4][6] = {{-2719,2506,4818,186,45,8},
                      {1129,-1971,4966,-28,-1,2},
