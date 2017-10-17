@@ -3,8 +3,8 @@ from scipy.spatial.distance import euclidean
 from fastdtw import fastdtw
 
 
-def plot_test():
-    input_data = np.genfromtxt('data/multi_sen_test/11.csv', delimiter=',', skip_header=0, names=True)
+def plot():
+    input_data = np.genfromtxt('data/max_sens_tricks/new_nollie.csv', delimiter=',', skip_header=0, names=True)
 
     unfiltered = dev_data(input_data, 0)
     filtered = filter_device(unfiltered)
@@ -22,7 +22,7 @@ def plot_test():
     plt.show()
 
 
-def save_load_test():
+def save_load():
     input_data = np.genfromtxt('data/multi_sen_test/11.csv', delimiter=',', skip_header=0, names=True)
     filtered = filter_device(dev_data(input_data, 0))
     segmented = segment_data(filtered, 10000, 'gy')
@@ -30,7 +30,7 @@ def save_load_test():
     np.save('ollies_0', segmented)
 
 
-def dtw_test():
+def dtw():
 
     input_data = np.genfromtxt('data/multi_sen_test/11.csv', delimiter=',', skip_header=0, names=True)
     filtered = filter_device(dev_data(input_data, 0))
@@ -88,5 +88,14 @@ def dtw_test():
     plt.show()
 
 
-dtw_test()
-#save_load_test()
+def train():
+    ollies = np.load('ollies_0.npy')
+    print(len(ollies))
+    for ollie in ollies:
+        print(ollie.dtype)
+    print(ollies.dtype)
+
+plot()
+#train()
+#dtw()
+#save_load()
