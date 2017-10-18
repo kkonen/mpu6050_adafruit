@@ -46,19 +46,19 @@ def filter_device(input_data):
     return output
 
 
-def find_peaks(signal, ts, thresh, min_dist):
+def find_peaks(signal, ts, thresh, min_dist, absolute=False):
     peaks = []
     last_peak_micros = 0
     for i in range(0, len(signal)):
-        if (signal[i] > thresh) and ts[i] - last_peak_micros > min_dist:
+        if (signal[i] > thresh or (absolute and signal[i] < -thresh)) and ts[i] - last_peak_micros > min_dist:
             last_peak_micros = ts[i]
             peaks.append(i)
 
     return np.array(peaks)
 
 
-def segment_data(input_data, threshold, channel):
-    peaks = find_peaks(input_data[:][channel], input_data[:]['micros'], threshold, 1000000)
+def segment_data(input_data, channel, threshold=5000):
+    peaks = find_peaks(input_data[:][channel], input_data[:]['micros'], threshold, 1000000, absolute=True)
     segments = []
     for i in peaks:
         segments.append(input_data[i-50:i+250])
