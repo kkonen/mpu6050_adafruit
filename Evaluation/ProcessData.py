@@ -44,21 +44,33 @@ def pre_process_and_save(trick_names, prefix_load='data/max_sens_tricks/new_', p
             input_data = np.genfromtxt(prefix_load+trick_name+'.csv', delimiter=',', skip_header=0, names=True)
             filtered[dev] = filter_device(dev_data(input_data, dev))
             #segmented = segment_data(filtered[dev], 'gy')
-        join_data(filtered)
-        #segmented = segment_data(filtered, 'gy')
+        joined = join_data(filtered)
+        segmented = segment_data(joined, 'gy')
 
-        # np.save(prefix_save + trick_name, segmented)
+        print(segmented)
+        np.save(prefix_save + trick_name, segmented)
 
 
 def join_data(input_data):
+    i = 0
     for dev in input_data.keys():
-        print(dev)
+        if i == 0:
+            joined = input_data[dev]
+        else:
+            for chan in ['ax', 'ay', 'az', 'gx', 'gy', 'gz']:
+                joined = append_fields(joined, chan+str(dev), input_data[dev][chan])
+            joined = drop_fields(joined, 'device')
+        i += 1
+
+    print(joined.dtype.names)
+    return joined
 
 
 def calc_dtw_sum(seg1, seg2, channels=['ax', 'ay', 'az', 'gx', 'gy', 'gz'], weights=[1, 1, 1, 1, 1, 1]):
-
-    channels = ['gx', 'gy', 'gz']
-    weights = [1, 1, 1]
+    #channels = ['gx', 'gy', 'gz']
+    #weights = [1, 1, 1]
+    #channels = ['gx', 'gy', 'gz', 'gx2', 'gy2', 'gz2']
+    #weights = [1, 1, 1, 1, 1, 1]
 
     dtw_sum = 0
     for i in range(0, len(channels)):
@@ -132,13 +144,16 @@ def train():
 
     for trick_name in trick_names:
         i = 0
-        trick[trick_name] = np.load(trick_name+'.npy')
+        trick[trick_name] = np.load('data/processed_data/' + trick_name+'.npy')
         mean_trick[trick_name] = calc_mean_segment(trick[trick_name])
         plot_segment(mean_trick[trick_name], title='mean '+trick_name)
         for t in trick[trick_name]:
             i += 1
             #print(trick_name + '_' + str(i) + ' dist to own mean: ' + str(calc_dtw_sum(t, mean_trick[trick_name])))
 
+    channels = mean_trick[trick_names[0]].dtype.names
+    channels = channels[1:]  # remove micros
+    weights = np.ones(len(channels))
     for trick_name in trick_names:
         i = 0
         for t in trick[trick_name]:
@@ -148,23 +163,14 @@ def train():
             min_d = 99999999999999999999
             best_lb = ''
             for comp in trick_names:
-                dist[comp] = calc_dtw_sum(t, mean_trick[comp])
+                dist[comp] = calc_dtw_sum(t, mean_trick[comp], channels, weights)
                 d_str = d_str + '[' + comp + ':' + str(dist[comp]) + ']'
                 if dist[comp] < min_d:
                     best_lb = comp
                     min_d = dist[comp]
 
             correct = '1 # ' if best_lb == trick_name else '0 # '
-            print correct + trick_name + '_' + str(i) + ' [ class:' + best_lb + '] - ' + d_str
-
-    #test multidev
-    ollie2 = np.load('ollie_dev2.npy')
-    mean_o2 = calc_mean_segment(ollie2)
-    mean_o0 = copy.deepcopy(mean_trick['ollie'])
-
-    mean_o0 = append_fields(mean_o0, 'ax2', mean_o2['ax'])
-    print(mean_o0.dtype.names)
-    print(mean_o0['ax2'])
+            print(correct + trick_name + '_' + str(i) + ' [class: ' + best_lb + '] - ' + d_str)
 
     #plt.show()
 
@@ -202,4 +208,5 @@ def combine_devices():
 #combine_devices()
 #save_load()
 
-pre_process_and_save(['ollie', 'nollie', 'pop_shuv_it'])
+#pre_process_and_save(['ollie', 'nollie', 'pop_shuv_it'])
+train()
