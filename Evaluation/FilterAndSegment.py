@@ -36,7 +36,7 @@ def filter_device(input_data):
    # if input.dtype == np.dtype('float64'):
     time = input_data['micros']
     output = copy.deepcopy(input_data)
-    freq = 10
+    freq = 5
     output['ax'] = filter_data(input_data['ax'], freq, time)
     output['ay'] = filter_data(input_data['ay'], freq, time)
     output['az'] = filter_data(input_data['az'], freq, time)
@@ -79,8 +79,8 @@ def calc_mean_segment(segments):
 
 
 def plot_segment(input_data, input_data2=None, title=None, include_labels=['ax', 'ay', 'az', 'gx', 'gy', 'gz'], t=None):
-    all_labels = ['ax', 'ay', 'az', 'gx', 'gy', 'gz']
-    lb_colors = ['r', 'g', 'b', 'm', 'c', 'k']
+    all_labels = ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'ax2', 'ay2', 'az2', 'gx2', 'gy2', 'gz2']
+    lb_colors = ['r', 'g', 'b', 'm', 'c', 'k', 'g', 'b', 'm', 'c', 'k', 'r']
 
     if input_data.dtype == np.dtype('float64'):
         if t is None:
