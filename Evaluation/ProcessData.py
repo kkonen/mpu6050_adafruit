@@ -45,7 +45,7 @@ def load_from_dir_and_preprocess(trick_name, prefix_save):
     for file in onlyfiles:
         filtered = dict()
         print(file)
-        input_data = np.genfromtxt( 'data/tricks/'+trick_name+'/'+file, delimiter=',', skip_header=0, names=True)
+        input_data = np.genfromtxt('data/tricks/'+trick_name+'/'+file, delimiter=',', skip_header=0, names=True)
         for dev in devices:
             filtered[dev] = filter_device(dev_data(input_data, dev))
         joined = join_data(filtered)
@@ -56,15 +56,11 @@ def load_from_dir_and_preprocess(trick_name, prefix_save):
         if num == 2:
            # for seg in segments:
                # plot_segment(seg,title=file, include_labels=['gy', 'gy2'])
-
-
             segments = segments[:-1]
          #   segments = segments[1:]
 
             #plot_segment(segments[0], include_labels=['gz','gz2'])
             #print('tossed segment, new len: '+str(len(segments)))
-
-            print(segments.dtype.names)
 
         #else:
         #    continue
@@ -106,8 +102,6 @@ def join_data(input_data):
                 joined = append_fields(joined, chan+str(dev), input_data[dev][chan])
             joined = drop_fields(joined, 'device')
         i += 1
-
-   # print(joined.dtype.names)
     return joined
 
 
@@ -201,10 +195,7 @@ def tst(path, mean_path):
     tst_data = [f for f in listdir(path) if isfile(join(path, f))]
     mean_data = [f for f in listdir(mean_path) if isfile(join(mean_path, f))]
     mean_data = np.array(mean_data)[np.chararray.startswith(mean_data, 'mean_')]
-    print(mean_data)
-    print(tst_data)
 
-    #trick_names = ['ollie', 'nollie', 'popshuvit']
     test_tricks = [tr.replace('.npy', '') for tr in tst_data]
     learned_tricks = [tr.replace('.npy', '').replace('mean_', '') for tr in mean_data]
     trick = dict()
@@ -300,10 +291,10 @@ def merge_mis():
 #load_from_dir_and_preprocess('ollie', 'data/processed_data/mis/')
 
 
-
-print('old')
+print('\n#######\n# OLD #\n#######')
 tst('data/processed_data/old/', 'data/processed_data/means/')
-print('new')
+
+print('\n#######\n# NEW #\n#######')
 tst('data/processed_data/', 'data/processed_data/means/')
 #print('mis')
 #tst('data/processed_data/mis/', 'data/processed_data/means/')
