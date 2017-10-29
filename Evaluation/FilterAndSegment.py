@@ -78,7 +78,8 @@ def calc_mean_segment(segments):
     return mean_seg
 
 
-def plot_segment(input_data, input_data2=None, title=None, include_labels=['ax', 'ay', 'az', 'gx', 'gy', 'gz'], t=None):
+def plot_segment(input_data, input_data2=None, title=None, include_labels=['ax', 'ay', 'az', 'gx', 'gy', 'gz'],
+                 t=None, legend=False):
     all_labels = ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'ax2', 'ay2', 'az2', 'gx2', 'gy2', 'gz2']
     lb_colors = ['r', 'g', 'b', 'm', 'c', 'k', 'g', 'b', 'm', 'c', 'k', 'r']
 
@@ -89,6 +90,8 @@ def plot_segment(input_data, input_data2=None, title=None, include_labels=['ax',
         else:
             fig, ax = plt.subplots(1)
             ax.plot(t, input_data, c='r')
+            if legend:
+                ax.legend()
     else:
         if t is None:
             t = input_data['micros']/1000000
@@ -98,6 +101,8 @@ def plot_segment(input_data, input_data2=None, title=None, include_labels=['ax',
             for i in range(0, len(all_labels)):
                 if all_labels[i] in include_labels:
                     ax.plot(t, input_data[all_labels[i]], c=lb_colors[i], label=all_labels[i])
+            if legend:
+                ax.legend()
         else:
             fig, ax = plt.subplots(2, sharex=True)
             for i in range(0, len(all_labels)):
@@ -107,6 +112,9 @@ def plot_segment(input_data, input_data2=None, title=None, include_labels=['ax',
             for i in range(0, len(all_labels)):
                 if all_labels[i] in include_labels:
                     ax[1].plot(t, input_data2[all_labels[i]], c=lb_colors[i], label=all_labels[i])
+            if legend:
+                ax[0].legend()
+                ax[1].legend()
 
     if title is not None:
             fig.canvas.set_window_title(title)
