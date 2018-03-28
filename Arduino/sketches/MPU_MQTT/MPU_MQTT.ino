@@ -7,37 +7,20 @@
 
 #define AIO_SERVER      "192.168.4.2"
 #define AIO_SERVERPORT  1883                   // use 8883 for SSL
-#define AIO_USERNAME    "...your AIO username (see https://accounts.adafruit.com)..."
-#define AIO_KEY         "...your AIO key..."
+//#define AIO_USERNAME    "...your AIO username (see https://accounts.adafruit.com)..."
+//#define AIO_KEY         "...your AIO key..."
 
 MPU6050 mpu;
-int addPins[4] = {A0,A1,A2,A3};
-int gyro_sen[4] = {MPU6050_GYRO_FS_2000,
-                   MPU6050_GYRO_FS_2000,
-                   MPU6050_GYRO_FS_2000,
-                   MPU6050_GYRO_FS_2000};
-int acc_sen[4] = {MPU6050_ACCEL_FS_16,
-                   MPU6050_ACCEL_FS_16,
-                   MPU6050_ACCEL_FS_16,
-                   MPU6050_ACCEL_FS_16};
-int offsets[4][6] = {{-2719,2506,4818,186,45,8},
-                     {1129,-1971,4966,-28,-1,2},
-                     {-2627,-1065,5137,110,-19,0},
-                     {-2627,-1065,5137,110,-19,0}};
-
-
-static unsigned long startMicros;
+int gyro_sen = MPU6050_GYRO_FS_2000;
+int acc_sen = MPU6050_ACCEL_FS_16;
+int offsets[6] = {-2719,2506,4818,186,45,8};
 
 const char *ssid = "ESP32ap";
 const char *password = "qweqweqwe";
 
 WiFiClient client;
-
 Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, "test", "", "");
-
 Adafruit_MQTT_Publish publisher = Adafruit_MQTT_Publish(&mqtt, "espdata");
-
-const int devices = 1;
 
 struct data_t {
   unsigned long time;
@@ -49,13 +32,10 @@ struct data_t {
   int16_t gz;
 };
 
-
 void acquireData(data_t* data) {
     mpu.getMotion6(&(data->ax), &(data->ay), &(data->az), &(data->gx), &(data->gy), &(data->gz));
     data->time = micros();
-  
 }
-
 
 void setup() {
   Serial.begin(115200);
@@ -72,33 +52,28 @@ void setup() {
   Wire.begin();
   Wire.setClock(400000); // 400kHz I2C clock. Comment this line if having compilation difficulties
 
-
-  
   // initialize serial communication
 //  Serial.begin(115200);
 //  while (!Serial); // wait for Leonardo enumeration, others continue immediately
   
-  Serial.println(F("Initializing I2C devices..."));
-  for(int i=0; i<devices; i++){
+  Serial.println(F("Initializing I2C device..."));
+ 
     // initialize device
     mpu.initialize();
     
     // verify connection
-    Serial.print("Testing MPU"); Serial.print(i); Serial.print(" connection... ");
+    Serial.print("Testing MPU"); Serial.print(" connection... ");
     bool connection = mpu.testConnection();
     Serial.println(connection ? F("connection successful!") : F("connection FAILED!"));
 
-    mpu.setFullScaleGyroRange(gyro_sen[i]);
-    mpu.setFullScaleAccelRange(acc_sen[i]);
-    mpu.setXAccelOffset(offsets[i][0]);
-    mpu.setYAccelOffset(offsets[i][1]);
-    mpu.setZAccelOffset(offsets[i][2]);
-    mpu.setXGyroOffset(offsets[i][3]);
-    mpu.setYGyroOffset(offsets[i][4]);
-    mpu.setZGyroOffset(offsets[i][5]);
-
-    
-  }
+    mpu.setFullScaleGyroRange(gyro_sen);
+    mpu.setFullScaleAccelRange(acc_sen);
+    mpu.setXAccelOffset(offsets[0]);
+    mpu.setYAccelOffset(offsets[1]);
+    mpu.setZAccelOffset(offsets[2]);
+    mpu.setXGyroOffset(offsets[3]);
+    mpu.setYGyroOffset(offsets[4]);
+    mpu.setZGyroOffset(offsets[5]);
 }
 
 void loop() {
@@ -106,7 +81,7 @@ void loop() {
   
   data_t data;
   acquireData(&data);
-  Serial.print("DATA: ");
+  /*Serial.print("DATA: ");
   Serial.print(data.time);
   Serial.print(" ax: ");
   Serial.print(data.ax);
@@ -119,7 +94,7 @@ void loop() {
   Serial.print(" gy: ");
   Serial.print(data.gy);
   Serial.print(" gz: ");
-  Serial.println(data.gz);
+  Serial.println(data.gz);*/
   publisher.publish((uint8_t*)&data, sizeof(struct data_t));
   
 }
